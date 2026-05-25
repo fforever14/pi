@@ -23,7 +23,6 @@ import type { AssistantMessage } from "../types.ts";
  * - MiniMax: "invalid params, context window exceeds limit"
  * - Kimi For Coding: "Your request exceeded model token limit: X (requested: Y)"
  * - Cerebras: "400/413 status code (no body)"
- * - Mistral: "Prompt contains X tokens ... too large for model with Y maximum context length"
  * - z.ai: Does NOT error, accepts overflow silently - handled via usage.input > contextWindow
  * - Xiaomi MiMo: Truncates input to fill contextWindow exactly, then returns finish_reason "length"
  *   with output=0 (no room left to generate). Detected via stopReason "length" + zero output +
@@ -46,7 +45,6 @@ const OVERFLOW_PATTERNS = [
 	/greater than the context length/i, // LM Studio
 	/context window exceeds limit/i, // MiniMax
 	/exceeded model token limit/i, // Kimi For Coding
-	/too large for model with \d+ maximum context length/i, // Mistral
 	/model_context_window_exceeded/i, // z.ai non-standard finish_reason surfaced as error text
 	/prompt too long; exceeded (?:max )?context length/i, // Ollama explicit overflow error
 	/context[_ ]length[_ ]exceeded/i, // Generic fallback
@@ -88,7 +86,6 @@ const NON_OVERFLOW_PATTERNS = [
  * - xAI (Grok): "maximum prompt length is X but request contains Y"
  * - Groq: "reduce the length of the messages"
  * - Cerebras: 400/413 status code (no body)
- * - Mistral: "Prompt contains X tokens ... too large for model with Y maximum context length"
  * - OpenRouter (all backends): "maximum context length is X tokens"
  * - Together AI: "The input (X tokens) is longer than the model's context length (Y tokens)."
  * - llama.cpp: "exceeds the available context size"

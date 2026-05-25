@@ -137,42 +137,34 @@ export const streamBedrock: StreamFunction<"bedrock-converse-stream", BedrockOpt
 		const bearerToken = options.bearerToken || process.env.AWS_BEARER_TOKEN_BEDROCK || undefined;
 		const useBearerToken = bearerToken !== undefined && process.env.AWS_BEDROCK_SKIP_AUTH !== "1";
 
-		// in Node.js/Bun environment only
-		if (typeof process !== "undefined" && (process.versions?.node || process.versions?.bun)) {
-			// Region resolution: explicit option > env vars > SDK default chain.
-			// When AWS_PROFILE is set, we leave region undefined so the SDK can
-			// resovle it from aws profile configs. Otherwise fall back to us-east-1.
-			if (configuredRegion) {
-				config.region = configuredRegion;
-			} else if (endpointRegion && useExplicitEndpoint) {
-				config.region = endpointRegion;
-			} else if (!hasConfiguredProfile) {
-				config.region = "us-east-1";
-			}
+		// Region resolution: explicit option > env vars > SDK default chain.
+		// When AWS_PROFILE is set, we leave region undefined so the SDK can
+		// resolve it from aws profile configs. Otherwise fall back to us-east-1.
+		if (configuredRegion) {
+			config.region = configuredRegion;
+		} else if (endpointRegion && useExplicitEndpoint) {
+			config.region = endpointRegion;
+		} else if (!hasConfiguredProfile) {
+			config.region = "us-east-1";
+		}
 
-			// Support proxies that don't need authentication
-			if (process.env.AWS_BEDROCK_SKIP_AUTH === "1") {
-				config.credentials = {
-					accessKeyId: "dummy-access-key",
-					secretAccessKey: "dummy-secret-key",
-				};
-			}
+		// Support proxies that don't need authentication
+		if (process.env.AWS_BEDROCK_SKIP_AUTH === "1") {
+			config.credentials = {
+				accessKeyId: "dummy-access-key",
+				secretAccessKey: "dummy-secret-key",
+			};
+		}
 
-			const proxyAgents = createHttpProxyAgentsForTarget(model.baseUrl);
-			if (proxyAgents) {
-				// Bedrock runtime uses NodeHttp2Handler by default since v3.798.0, which is based
-				// on `http2` module and has no support for http agent.
-				// Use NodeHttpHandler to support HTTP(S) proxy agents.
-				config.requestHandler = new NodeHttpHandler(proxyAgents);
-			} else if (process.env.AWS_BEDROCK_FORCE_HTTP1 === "1") {
-				// Some custom endpoints require HTTP/1.1 instead of HTTP/2
-				config.requestHandler = new NodeHttpHandler();
-			}
-		} else {
-			// Non-Node environment (browser): fall back to us-east-1 since
-			// there's no config file resolution available.
-			config.region =
-				configuredRegion || (endpointRegion && useExplicitEndpoint ? endpointRegion : undefined) || "us-east-1";
+		const proxyAgents = createHttpProxyAgentsForTarget(model.baseUrl);
+		if (proxyAgents) {
+			// Bedrock runtime uses NodeHttp2Handler by default since v3.798.0, which is based
+			// on `http2` module and has no support for http agent.
+			// Use NodeHttpHandler to support HTTP(S) proxy agents.
+			config.requestHandler = new NodeHttpHandler(proxyAgents);
+		} else if (process.env.AWS_BEDROCK_FORCE_HTTP1 === "1") {
+			// Some custom endpoints require HTTP/1.1 instead of HTTP/2
+			config.requestHandler = new NodeHttpHandler();
 		}
 
 		if (useBearerToken) {
@@ -519,7 +511,7 @@ function resolveCacheRetention(cacheRetention?: CacheRetention): CacheRetention 
 	if (cacheRetention) {
 		return cacheRetention;
 	}
-	if (typeof process !== "undefined" && process.env.PI_CACHE_RETENTION === "long") {
+	if (process.env.PI_CACHE_RETENTION === "long") {
 		return "long";
 	}
 	return "short";
@@ -561,7 +553,7 @@ function supportsPromptCaching(model: Model<"bedrock-converse-stream">): boolean
 	if (!hasClaudeRef) {
 		// Application inference profiles don't contain the model name in the ARN.
 		// Allow users to force cache points via environment variable.
-		if (typeof process !== "undefined" && process.env.AWS_BEDROCK_FORCE_CACHE === "1") return true;
+		if (process.env.AWS_BEDROCK_FORCE_CACHE === "1") return true;
 		return false;
 	}
 	// Claude 4.x models (opus-4, sonnet-4, haiku-4)
@@ -822,18 +814,10 @@ function mapStopReason(reason: string | undefined): StopReason {
 }
 
 function getConfiguredBedrockRegion(options: BedrockOptions): string | undefined {
-	if (typeof process === "undefined") {
-		return options.region;
-	}
-
 	return options.region || process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || undefined;
 }
 
 function hasConfiguredBedrockProfile(): boolean {
-	if (typeof process === "undefined") {
-		return false;
-	}
-
 	return Boolean(process.env.AWS_PROFILE);
 }
 

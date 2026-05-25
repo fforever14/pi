@@ -6,10 +6,10 @@ import type { Api, Context, Model, StreamOptions, ToolResultMessage } from "../s
 
 type StreamOptionsWithExtras = StreamOptions & Record<string, unknown>;
 
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { hasAzureOpenAICredentials, resolveAzureDeploymentName } from "./azure-utils.ts";
 import { hasBedrockCredentials } from "./bedrock-utils.ts";
 import { hasCloudflareAiGatewayCredentials, hasCloudflareWorkersAICredentials } from "./cloudflare-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 // Empty schema for test tools - must be proper OBJECT type for Cloud Code Assist
 const emptySchema = Type.Object({});
@@ -34,7 +34,7 @@ const [anthropicOAuthToken, githubCopilotToken, openaiCodexToken] = oauthTokens;
  */
 
 async function testEmojiInToolResults<TApi extends Api>(llm: Model<TApi>, options: StreamOptionsWithExtras = {}) {
-	const toolCallId = llm.provider === "mistral" ? "testtool1" : "test_1";
+	const toolCallId = "test_1";
 	// Simulate a tool that returns emoji
 	const context: Context = {
 		systemPrompt: "You are a helpful assistant.",
@@ -121,7 +121,7 @@ async function testEmojiInToolResults<TApi extends Api>(llm: Model<TApi>, option
 }
 
 async function testRealWorldLinkedInData<TApi extends Api>(llm: Model<TApi>, options: StreamOptionsWithExtras = {}) {
-	const toolCallId = llm.provider === "mistral" ? "linkedin1" : "linkedin_1";
+	const toolCallId = "linkedin_1";
 	const context: Context = {
 		systemPrompt: "You are a helpful assistant.",
 		messages: [
@@ -210,7 +210,7 @@ Unanswered Comments: 2
 }
 
 async function testUnpairedHighSurrogate<TApi extends Api>(llm: Model<TApi>, options: StreamOptionsWithExtras = {}) {
-	const toolCallId = llm.provider === "mistral" ? "testtool2" : "test_2";
+	const toolCallId = "test_2";
 	const context: Context = {
 		systemPrompt: "You are a helpful assistant.",
 		messages: [
@@ -565,22 +565,6 @@ describe("AI Providers Unicode Surrogate Pair Tests", () => {
 
 	describe.skipIf(!process.env.ZAI_API_KEY)("zAI Provider Unicode Handling", () => {
 		const llm = getModel("zai", "glm-4.5-air");
-
-		it("should handle emoji in tool results", { retry: 3, timeout: 30000 }, async () => {
-			await testEmojiInToolResults(llm);
-		});
-
-		it("should handle real-world LinkedIn comment data with emoji", { retry: 3, timeout: 30000 }, async () => {
-			await testRealWorldLinkedInData(llm);
-		});
-
-		it("should handle unpaired high surrogate (0xD83D) in tool results", { retry: 3, timeout: 30000 }, async () => {
-			await testUnpairedHighSurrogate(llm);
-		});
-	});
-
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider Unicode Handling", () => {
-		const llm = getModel("mistral", "devstral-medium-latest");
 
 		it("should handle emoji in tool results", { retry: 3, timeout: 30000 }, async () => {
 			await testEmojiInToolResults(llm);

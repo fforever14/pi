@@ -14,9 +14,9 @@ import { Type } from "typebox";
 import { describe, expect, it } from "vitest";
 import { getEnvApiKey } from "../../ai-providers/src/env-api-keys.ts";
 import { getModel } from "../../ai-providers/src/models.ts";
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { completeSimple } from "../src/stream.ts";
 import type { AssistantMessage, Message, Tool, ToolResultMessage } from "../src/types.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 // Resolve API keys
 const copilotToken = await resolveApiKey("github-copilot");

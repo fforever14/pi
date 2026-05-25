@@ -8,8 +8,8 @@
 import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import { dirname, join } from "path";
-import { getOAuthApiKey } from "../../ai-providers/src/utils/oauth/index.ts";
-import type { OAuthCredentials, OAuthProvider } from "../../ai-providers/src/utils/oauth/types.ts";
+import { getOAuthApiKey } from "../src/utils/oauth/index.ts";
+import type { OAuthCredentials, OAuthProvider } from "../src/utils/oauth/types.ts";
 
 const AUTH_PATH = join(homedir(), ".pi", "agent", "auth.json");
 

@@ -5,9 +5,9 @@ import type { Api, Context, Model, StreamOptions } from "../src/types.ts";
 
 type StreamOptionsWithExtras = StreamOptions & Record<string, unknown>;
 
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { hasAzureOpenAICredentials, resolveAzureDeploymentName } from "./azure-utils.ts";
 import { hasBedrockCredentials } from "./bedrock-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 // Resolve OAuth tokens at module level (async, runs before tests)
 const [openaiCodexToken] = await Promise.all([resolveApiKey("openai-codex")]);
@@ -163,18 +163,6 @@ describe("AI Providers Abort Tests", () => {
 
 		it("should handle immediate abort", { retry: 3 }, async () => {
 			await testImmediateAbort(llm, { thinkingEnabled: true, thinkingBudgetTokens: 2048 });
-		});
-	});
-
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider Abort", () => {
-		const llm = getModel("mistral", "devstral-medium-latest");
-
-		it("should abort mid-stream", { retry: 3 }, async () => {
-			await testAbortSignal(llm);
-		});
-
-		it("should handle immediate abort", { retry: 3 }, async () => {
-			await testImmediateAbort(llm);
 		});
 	});
 

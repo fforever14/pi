@@ -5,10 +5,10 @@ import type { ResponseFunctionCallOutputItemList } from "openai/resources/respon
 import { Type } from "typebox";
 import { describe, expect, it } from "vitest";
 import { getModel } from "../../ai-providers/src/models.ts";
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import type { Api, Context, Model, StreamOptions, Tool, ToolResultMessage } from "../src/index.ts";
 import { complete } from "../src/index.ts";
 import { hasAzureOpenAICredentials, resolveAzureDeploymentName } from "./azure-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 type StreamOptionsWithExtras = StreamOptions & Record<string, unknown>;
 

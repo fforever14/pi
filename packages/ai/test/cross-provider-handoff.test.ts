@@ -27,11 +27,11 @@ import { Type } from "typebox";
 import { beforeAll, describe, expect, it } from "vitest";
 import { getEnvApiKey } from "../../ai-providers/src/env-api-keys.ts";
 import { getModel } from "../../ai-providers/src/models.ts";
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { completeSimple } from "../src/stream.ts";
 import type { Api, AssistantMessage, Message, Model, Tool, ToolResultMessage } from "../src/types.ts";
 import { hasAzureOpenAICredentials } from "./azure-utils.ts";
 import { hasCloudflareAiGatewayCredentials, hasCloudflareWorkersAICredentials } from "./cloudflare-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 // Simple tool for testing
 const testToolSchema = Type.Object({
@@ -112,8 +112,6 @@ const PROVIDER_MODEL_PAIRS: ProviderModelPair[] = [
 	{ provider: "together", model: "moonshotai/Kimi-K2.6", label: "together-kimi-k2.6" },
 	// Kimi For Coding
 	{ provider: "kimi-coding", model: "kimi-k2-thinking", label: "kimi-coding-k2-thinking" },
-	// Mistral
-	{ provider: "mistral", model: "devstral-medium-latest", label: "mistral-devstral-medium" },
 	// MiniMax
 	{ provider: "minimax", model: "MiniMax-M2.7", label: "minimax-m2.7" },
 	{ provider: "minimax-cn", model: "MiniMax-M2.7", label: "minimax-m2.7" },

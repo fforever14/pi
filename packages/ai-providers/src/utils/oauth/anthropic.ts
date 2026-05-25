@@ -6,6 +6,7 @@
  */
 
 import type { Server } from "node:http";
+import { createServer } from "node:http";
 import { oauthErrorHtml, oauthSuccessHtml } from "./oauth-page.ts";
 import { generatePKCE } from "./pkce.ts";
 import type { OAuthCredentials, OAuthLoginCallbacks, OAuthPrompt, OAuthProviderInterface } from "./types.ts";
@@ -17,13 +18,6 @@ type CallbackServerInfo = {
 	waitForCode: () => Promise<{ code: string; state: string } | null>;
 };
 
-type NodeApis = {
-	createServer: typeof import("node:http").createServer;
-};
-
-let nodeApis: NodeApis | null = null;
-let nodeApisPromise: Promise<NodeApis> | null = null;
-
 const decode = (s: string) => atob(s);
 const CLIENT_ID = decode("OWQxYzI1MGEtZTYxYi00NGQ5LTg4ZWQtNTk0NGQxOTYyZjVl");
 const AUTHORIZE_URL = "https://claude.ai/oauth/authorize";
@@ -34,19 +28,6 @@ const CALLBACK_PATH = "/callback";
 const REDIRECT_URI = `http://localhost:${CALLBACK_PORT}${CALLBACK_PATH}`;
 const SCOPES =
 	"org:create_api_key user:profile user:inference user:sessions:claude_code user:mcp_servers user:file_upload";
-async function getNodeApis(): Promise<NodeApis> {
-	if (nodeApis) return nodeApis;
-	if (!nodeApisPromise) {
-		if (typeof process === "undefined" || (!process.versions?.node && !process.versions?.bun)) {
-			throw new Error("Anthropic OAuth is only available in Node.js environments");
-		}
-		nodeApisPromise = import("node:http").then((httpModule) => ({
-			createServer: httpModule.createServer,
-		}));
-	}
-	nodeApis = await nodeApisPromise;
-	return nodeApis;
-}
 
 function parseAuthorizationInput(input: string): { code?: string; state?: string } {
 	const value = input.trim();
@@ -96,8 +77,6 @@ function formatErrorDetails(error: unknown): string {
 }
 
 async function startCallbackServer(expectedState: string): Promise<CallbackServerInfo> {
-	const { createServer } = await getNodeApis();
-
 	return new Promise((resolve, reject) => {
 		let settleWait: ((value: { code: string; state: string } | null) => void) | undefined;
 		const waitForCodePromise = new Promise<{ code: string; state: string } | null>((resolveWait) => {

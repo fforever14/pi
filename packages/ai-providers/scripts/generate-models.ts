@@ -708,32 +708,6 @@ async function loadModelsDevData(): Promise<Model<any>[]> {
 			}
 		}
 
-		// Process Mistral models
-		if (data.mistral?.models) {
-			for (const [modelId, model] of Object.entries(data.mistral.models)) {
-				const m = model as ModelsDevModel;
-				if (m.tool_call !== true) continue;
-
-				models.push({
-					id: modelId,
-					name: m.name || modelId,
-					api: "mistral-conversations",
-					provider: "mistral",
-					baseUrl: "https://api.mistral.ai",
-					reasoning: m.reasoning === true,
-					input: m.modalities?.input?.includes("image") ? ["text", "image"] : ["text"],
-					cost: {
-						input: m.cost?.input || 0,
-						output: m.cost?.output || 0,
-						cacheRead: m.cost?.cache_read || 0,
-						cacheWrite: m.cost?.cache_write || 0,
-					},
-					contextWindow: m.limit?.context || 4096,
-					maxTokens: m.limit?.output || 4096,
-				});
-			}
-		}
-
 		// Process Hugging Face models
 		if (data.huggingface?.models) {
 			for (const [modelId, model] of Object.entries(data.huggingface.models)) {
@@ -1640,27 +1614,6 @@ async function generateModels() {
 		if (!allModels.some(m => m.provider === model.provider && m.id === model.id)) {
 			allModels.push(model);
 		}
-	}
-
-	// Add missing Mistral Medium 3.5 model until models.dev includes it
-	if (!allModels.some(m => m.provider === "mistral" && m.id === "mistral-medium-3.5")) {
-		allModels.push({
-			id: "mistral-medium-3.5",
-			name: "Mistral Medium 3.5",
-			api: "mistral-conversations",
-			provider: "mistral",
-			baseUrl: "https://api.mistral.ai",
-			reasoning: true,
-			input: ["text", "image"],
-			cost: {
-				input: 1.5,
-				output: 7.5,
-				cacheRead: 0,
-				cacheWrite: 0,
-			},
-			contextWindow: 262144, // 256k tokens
-			maxTokens: 262144,
-		});
 	}
 
 	// Add "auto" alias for openrouter/auto

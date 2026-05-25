@@ -15,12 +15,12 @@ import type { ChildProcess } from "child_process";
 import { execSync, spawn } from "child_process";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { getModel } from "../../ai-providers/src/models.ts";
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { complete } from "../src/stream.ts";
 import type { AssistantMessage, Context, Model, Usage } from "../src/types.ts";
 import { isContextOverflow } from "../src/utils/overflow.ts";
 import { hasAzureOpenAICredentials } from "./azure-utils.ts";
 import { hasBedrockCredentials } from "./bedrock-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 // Resolve OAuth tokens at module level (async, runs before tests)
 const oauthTokens = await Promise.all([resolveApiKey("github-copilot"), resolveApiKey("openai-codex")]);
@@ -370,22 +370,6 @@ describe("Context overflow error handling", () => {
 					console.log("  z.ai returned stop without overflow usage data, skipping overflow detection");
 				}
 			}
-		}, 120000);
-	});
-
-	// =============================================================================
-	// Mistral
-	// =============================================================================
-
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral", () => {
-		it("devstral-medium-latest - should detect overflow via isContextOverflow", async () => {
-			const model = getModel("mistral", "devstral-medium-latest");
-			const result = await testContextOverflow(model, process.env.MISTRAL_API_KEY!);
-			logResult(result);
-
-			expect(result.stopReason).toBe("error");
-			expect(result.errorMessage).toMatch(/too large for model with \d+ maximum context length/i);
-			expect(isContextOverflow(result.response, model.contextWindow)).toBe(true);
 		}, 120000);
 	});
 

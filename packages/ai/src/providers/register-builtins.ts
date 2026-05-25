@@ -15,7 +15,6 @@ import type { AnthropicOptions } from "./anthropic.ts";
 import type { AzureOpenAIResponsesOptions } from "./azure-openai-responses.ts";
 import type { GoogleOptions } from "./google.ts";
 import type { GoogleVertexOptions } from "./google-vertex.ts";
-import type { MistralOptions } from "./mistral.ts";
 import type { OpenAICodexResponsesOptions } from "./openai-codex-responses.ts";
 import type { OpenAICompletionsOptions } from "./openai-completions.ts";
 import type { OpenAIResponsesOptions } from "./openai-responses.ts";
@@ -51,11 +50,6 @@ interface GoogleProviderModule {
 interface GoogleVertexProviderModule {
 	streamGoogleVertex: StreamFunction<"google-vertex", GoogleVertexOptions>;
 	streamSimpleGoogleVertex: StreamFunction<"google-vertex", SimpleStreamOptions>;
-}
-
-interface MistralProviderModule {
-	streamMistral: StreamFunction<"mistral-conversations", MistralOptions>;
-	streamSimpleMistral: StreamFunction<"mistral-conversations", SimpleStreamOptions>;
 }
 
 interface OpenAICodexResponsesProviderModule {
@@ -102,9 +96,6 @@ let googleProviderModulePromise:
 	| undefined;
 let googleVertexProviderModulePromise:
 	| Promise<LazyProviderModule<"google-vertex", GoogleVertexOptions, SimpleStreamOptions>>
-	| undefined;
-let mistralProviderModulePromise:
-	| Promise<LazyProviderModule<"mistral-conversations", MistralOptions, SimpleStreamOptions>>
 	| undefined;
 let openAICodexResponsesProviderModulePromise:
 	| Promise<LazyProviderModule<"openai-codex-responses", OpenAICodexResponsesOptions, SimpleStreamOptions>>
@@ -255,19 +246,6 @@ function loadGoogleVertexProviderModule(): Promise<
 	return googleVertexProviderModulePromise;
 }
 
-function loadMistralProviderModule(): Promise<
-	LazyProviderModule<"mistral-conversations", MistralOptions, SimpleStreamOptions>
-> {
-	mistralProviderModulePromise ||= import("./mistral.ts").then((module) => {
-		const provider = module as MistralProviderModule;
-		return {
-			stream: provider.streamMistral,
-			streamSimple: provider.streamSimpleMistral,
-		};
-	});
-	return mistralProviderModulePromise;
-}
-
 function loadOpenAICodexResponsesProviderModule(): Promise<
 	LazyProviderModule<"openai-codex-responses", OpenAICodexResponsesOptions, SimpleStreamOptions>
 > {
@@ -331,8 +309,6 @@ export const streamGoogle = createLazyStream(loadGoogleProviderModule);
 export const streamSimpleGoogle = createLazySimpleStream(loadGoogleProviderModule);
 export const streamGoogleVertex = createLazyStream(loadGoogleVertexProviderModule);
 export const streamSimpleGoogleVertex = createLazySimpleStream(loadGoogleVertexProviderModule);
-export const streamMistral = createLazyStream(loadMistralProviderModule);
-export const streamSimpleMistral = createLazySimpleStream(loadMistralProviderModule);
 export const streamOpenAICodexResponses = createLazyStream(loadOpenAICodexResponsesProviderModule);
 export const streamSimpleOpenAICodexResponses = createLazySimpleStream(loadOpenAICodexResponsesProviderModule);
 export const streamOpenAICompletions = createLazyStream(loadOpenAICompletionsProviderModule);
@@ -353,12 +329,6 @@ export function registerBuiltInApiProviders(): void {
 		api: "openai-completions",
 		stream: streamOpenAICompletions,
 		streamSimple: streamSimpleOpenAICompletions,
-	});
-
-	registerApiProvider({
-		api: "mistral-conversations",
-		stream: streamMistral,
-		streamSimple: streamSimpleMistral,
 	});
 
 	registerApiProvider({

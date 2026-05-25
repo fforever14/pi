@@ -318,7 +318,6 @@ ${chalk.bold("Environment Variables:")}
   OPENROUTER_API_KEY               - OpenRouter API key
   AI_GATEWAY_API_KEY               - Vercel AI Gateway API key
   ZAI_API_KEY                      - ZAI API key
-  MISTRAL_API_KEY                  - Mistral API key
   MINIMAX_API_KEY                  - MiniMax API key
   MOONSHOT_API_KEY                 - Moonshot AI API key
   OPENCODE_API_KEY                 - OpenCode Zen/OpenCode Go API key

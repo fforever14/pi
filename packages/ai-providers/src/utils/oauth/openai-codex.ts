@@ -5,17 +5,8 @@
  * It is only intended for CLI use, not browser environments.
  */
 
-// NEVER convert to top-level imports - breaks browser/Vite builds
-let _randomBytes: typeof import("node:crypto").randomBytes | null = null;
-let _http: typeof import("node:http") | null = null;
-if (typeof process !== "undefined" && (process.versions?.node || process.versions?.bun)) {
-	import("node:crypto").then((m) => {
-		_randomBytes = m.randomBytes;
-	});
-	import("node:http").then((m) => {
-		_http = m;
-	});
-}
+import { randomBytes } from "node:crypto";
+import { createServer } from "node:http";
 
 import { oauthErrorHtml, oauthSuccessHtml } from "./oauth-page.ts";
 import { generatePKCE } from "./pkce.ts";
@@ -41,10 +32,7 @@ type JwtPayload = {
 };
 
 function createState(): string {
-	if (!_randomBytes) {
-		throw new Error("OpenAI Codex OAuth is only available in Node.js environments");
-	}
-	return _randomBytes(16).toString("hex");
+	return randomBytes(16).toString("hex");
 }
 
 function parseAuthorizationInput(input: string): { code?: string; state?: string } {
@@ -212,10 +200,6 @@ type OAuthServerInfo = {
 };
 
 function startLocalOAuthServer(state: string): Promise<OAuthServerInfo> {
-	if (!_http) {
-		throw new Error("OpenAI Codex OAuth is only available in Node.js environments");
-	}
-
 	let settleWait: ((value: { code: string } | null) => void) | undefined;
 	const waitForCodePromise = new Promise<{ code: string } | null>((resolve) => {
 		let settled = false;
@@ -226,7 +210,7 @@ function startLocalOAuthServer(state: string): Promise<OAuthServerInfo> {
 		};
 	});
 
-	const server = _http.createServer((req, res) => {
+	const server = createServer((req, res) => {
 		try {
 			const url = new URL(req.url || "", "http://localhost");
 			if (url.pathname !== "/auth/callback") {

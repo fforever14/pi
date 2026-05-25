@@ -9,9 +9,9 @@ import type { StreamOptions } from "../src/types.ts";
 
 type StreamOptionsWithExtras = StreamOptions & Record<string, unknown>;
 
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { hasAzureOpenAICredentials, resolveAzureDeploymentName } from "./azure-utils.ts";
 import { hasBedrockCredentials } from "./bedrock-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 // Resolve OAuth tokens at module level (async, runs before tests)
 const oauthTokens = await Promise.all([
@@ -283,18 +283,6 @@ describe("Tool Results with Images", () => {
 		});
 
 		it("should handle tool result with text and image", { retry: 3, timeout: 30000 }, async () => {
-			await handleToolWithTextAndImageResult(llm);
-		});
-	});
-
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider (pixtral-12b)", () => {
-		const llm = getModel("mistral", "pixtral-12b");
-
-		it("should handle tool result with only image", { retry: 5, timeout: 30000 }, async () => {
-			await handleToolWithImageResult(llm);
-		});
-
-		it("should handle tool result with text and image", { retry: 5, timeout: 30000 }, async () => {
 			await handleToolWithTextAndImageResult(llm);
 		});
 	});

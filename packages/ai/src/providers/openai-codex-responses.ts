@@ -1,24 +1,10 @@
-import type * as NodeOs from "node:os";
+import * as os from "node:os";
 import type {
 	Tool as OpenAITool,
 	ResponseCreateParamsStreaming,
 	ResponseInput,
 	ResponseStreamEvent,
 } from "openai/resources/responses/responses.js";
-
-// NEVER convert to top-level runtime imports - breaks browser/Vite builds
-let _os: typeof NodeOs | null = null;
-
-type DynamicImport = (specifier: string) => Promise<unknown>;
-
-const dynamicImport: DynamicImport = (specifier) => import(specifier);
-const NODE_OS_SPECIFIER = "node:" + "os";
-
-if (typeof process !== "undefined" && (process.versions?.node || process.versions?.bun)) {
-	dynamicImport(NODE_OS_SPECIFIER).then((m) => {
-		_os = m as typeof NodeOs;
-	});
-}
 
 import { clampThinkingLevel } from "../models.ts";
 import { registerSessionResourceCleanup } from "../session-resources.ts";
@@ -743,8 +729,9 @@ async function getWebSocketConstructor(): Promise<WebSocketConstructor | null> {
 		process?.versions?.bun &&
 		(process.env.HTTP_PROXY || process.env.HTTPS_PROXY || process.env.http_proxy || process.env.https_proxy)
 	) {
-		const m = await dynamicImport("proxy-from-env");
-		const getProxyForUrl = (m as { getProxyForUrl: (url: string | object | URL) => string }).getProxyForUrl;
+		const proxyModule = "proxy-from-env";
+		const m = (await import(proxyModule)) as { getProxyForUrl: (url: string | object | URL) => string };
+		const getProxyForUrl = m.getProxyForUrl;
 
 		_cachedWebsocket = class extends WebSocket {
 			constructor(url: string | URL, options?: string | string[] | Record<string, unknown>) {
@@ -1329,7 +1316,7 @@ function buildBaseCodexHeaders(
 	headers.set("Authorization", `Bearer ${token}`);
 	headers.set("chatgpt-account-id", accountId);
 	headers.set("originator", "pi");
-	const userAgent = _os ? `pi (${_os.platform()} ${_os.release()}; ${_os.arch()})` : "pi (browser)";
+	const userAgent = `pi (${os.platform()} ${os.release()}; ${os.arch()})`;
 	headers.set("User-Agent", userAgent);
 	return headers;
 }

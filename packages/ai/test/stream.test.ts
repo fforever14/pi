@@ -10,11 +10,11 @@ import type { Api, Context, ImageContent, Model, StreamOptions, Tool, ToolResult
 
 type StreamOptionsWithExtras = StreamOptions & Record<string, unknown>;
 
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { StringEnum } from "../src/utils/typebox-helpers.ts";
 import { hasAzureOpenAICredentials, resolveAzureDeploymentName } from "./azure-utils.ts";
 import { hasBedrockCredentials } from "./bedrock-utils.ts";
 import { hasCloudflareAiGatewayCredentials, hasCloudflareWorkersAICredentials } from "./cloudflare-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -917,52 +917,6 @@ describe("Generate E2E Tests", () => {
 
 		it("should handle multi-turn with thinking and tools", { retry: 3 }, async () => {
 			await multiTurn(llm, { reasoningEffort: "medium" });
-		});
-
-		it("should handle image input", { retry: 3 }, async () => {
-			await handleImage(llm);
-		});
-	});
-
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider (devstral-medium-latest)", () => {
-		const llm = getModel("mistral", "devstral-medium-latest");
-
-		it("should complete basic text generation", { retry: 3 }, async () => {
-			await basicTextGeneration(llm);
-		});
-
-		it("should handle tool calling", { retry: 3 }, async () => {
-			await handleToolCall(llm);
-		});
-
-		it("should handle streaming", { retry: 3 }, async () => {
-			await handleStreaming(llm);
-		});
-
-		it("should handle thinking mode", { retry: 3 }, async () => {
-			const llm = getModel("mistral", "magistral-medium-latest");
-			await handleThinking(llm, { promptMode: "reasoning" });
-		});
-
-		it("should handle multi-turn with thinking and tools", { retry: 3 }, async () => {
-			const llm = getModel("mistral", "magistral-medium-latest");
-			await multiTurn(llm, { promptMode: "reasoning" });
-		});
-	});
-
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider (pixtral-12b with image support)", () => {
-		const llm = getModel("mistral", "pixtral-12b");
-
-		it("should complete basic text generation", { retry: 3 }, async () => {
-			await basicTextGeneration(llm);
-		});
-
-		it("should handle tool calling", { retry: 3 }, async () => {
-			await handleToolCall(llm);
-		});
-
-		it("should handle streaming", { retry: 3 }, async () => {
-			await handleStreaming(llm);
 		});
 
 		it("should handle image input", { retry: 3 }, async () => {

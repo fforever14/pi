@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { getModel } from "../../ai-providers/src/models.ts";
+import { resolveApiKey } from "../../ai-providers/test/oauth.ts";
 import { complete } from "../src/stream.ts";
 import type { Api, Context, Model, StreamOptions } from "../src/types.ts";
 import { hasAzureOpenAICredentials, resolveAzureDeploymentName } from "./azure-utils.ts";
-import { resolveApiKey } from "./oauth.ts";
 
 type StreamOptionsWithExtras = StreamOptions & Record<string, unknown>;
 
@@ -85,14 +85,6 @@ describe("responseId E2E Tests", () => {
 
 		it("should expose responseId", { retry: 3, timeout: 30000 }, async () => {
 			await expectResponseId(llm, azureOptions);
-		});
-	});
-
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider", () => {
-		const llm = getModel("mistral", "devstral-medium-latest");
-
-		it("should expose responseId", { retry: 3, timeout: 30000 }, async () => {
-			await expectResponseId(llm);
 		});
 	});
 

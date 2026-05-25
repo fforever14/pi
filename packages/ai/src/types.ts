@@ -5,7 +5,6 @@ export type { AssistantMessageEventStream } from "./utils/event-stream.ts";
 
 export type KnownApi =
 	| "openai-completions"
-	| "mistral-conversations"
 	| "openai-responses"
 	| "azure-openai-responses"
 	| "openai-codex-responses"
@@ -36,7 +35,6 @@ export type KnownProvider =
 	| "openrouter"
 	| "vercel-ai-gateway"
 	| "zai"
-	| "mistral"
 	| "minimax"
 	| "minimax-cn"
 	| "moonshotai"

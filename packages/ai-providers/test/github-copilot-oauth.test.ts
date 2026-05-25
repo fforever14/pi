@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loginGitHubCopilot } from "../../ai-providers/src/utils/oauth/github-copilot.ts";
+import { loginGitHubCopilot } from "../src/utils/oauth/github-copilot.ts";
 
 function jsonResponse(body: unknown, status: number = 200): Response {
 	return new Response(JSON.stringify(body), {
