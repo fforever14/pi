@@ -33,8 +33,6 @@ import {
 	type ImageContent,
 	type Message,
 	type Model,
-	type OAuthCredentials,
-	type OAuthLoginCallbacks,
 	type SimpleStreamOptions,
 	type StopReason,
 	type TextContent,
@@ -43,6 +41,7 @@ import {
 	type ToolCall,
 	type ToolResultMessage,
 } from "@earendil-works/pi-ai";
+import type { OAuthCredentials, OAuthLoginCallbacks } from "@earendil-works/pi-ai-providers";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 // =============================================================================

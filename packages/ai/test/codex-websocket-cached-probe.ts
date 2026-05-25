@@ -9,8 +9,8 @@
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { Type } from "typebox";
+import { getModel } from "../../ai-providers/src/models.ts";
 import { AuthStorage } from "../../coding-agent/src/core/auth-storage.ts";
-import { getModel } from "../src/models.ts";
 import {
 	closeOpenAICodexWebSocketSessions,
 	getOpenAICodexWebSocketDebugStats,

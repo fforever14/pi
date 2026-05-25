@@ -1,6 +1,8 @@
 # @earendil-works/pi-ai
 
-Unified LLM API with automatic model discovery, provider configuration, token and cost tracking, and simple context persistence and hand-off to other models mid-session.
+Unified LLM runtime for chat, responses, messages, completions, and image APIs, with token and cost tracking plus simple context persistence and hand-off to other models mid-session.
+
+Built-in provider catalogs, generated model metadata, environment API-key helpers, and OAuth helpers live in `@earendil-works/pi-ai-providers`.
 
 **Note**: This library only includes models that support tool calling (function calling), as this is essential for agentic workflows.
 
@@ -79,7 +81,7 @@ Unified LLM API with automatic model discovery, provider configuration, token an
 ## Installation
 
 ```bash
-npm install @earendil-works/pi-ai
+npm install @earendil-works/pi-ai @earendil-works/pi-ai-providers
 ```
 
 TypeBox exports are re-exported from `@earendil-works/pi-ai`: `Type`, `Static`, and `TSchema`.
@@ -87,7 +89,8 @@ TypeBox exports are re-exported from `@earendil-works/pi-ai`: `Type`, `Static`, 
 ## Quick Start
 
 ```typescript
-import { Type, getModel, stream, complete, Context, Tool, StringEnum } from '@earendil-works/pi-ai';
+import { getModel } from '@earendil-works/pi-ai-providers';
+import { Type, stream, complete, StringEnum, type Context, type Tool } from '@earendil-works/pi-ai';
 
 // Fully typed with auto-complete support for both providers and models
 const model = getModel('openai', 'gpt-4o-mini');
@@ -796,6 +799,8 @@ Notes:
 
 ### Providers and Models
 
+The built-in provider catalog is supplied by `@earendil-works/pi-ai-providers`; `@earendil-works/pi-ai` accepts any `Model` object that targets a registered API implementation.
+
 A **provider** offers models through a specific API. For example:
 - **Anthropic** models use the `anthropic-messages` API
 - **Google** models use the `google-generative-ai` API
@@ -806,7 +811,7 @@ A **provider** offers models through a specific API. For example:
 ### Querying Providers and Models
 
 ```typescript
-import { getProviders, getModels, getModel } from '@earendil-works/pi-ai';
+import { getProviders, getModels, getModel } from '@earendil-works/pi-ai-providers';
 
 // Get all available providers
 const providers = getProviders();
@@ -1088,13 +1093,25 @@ const response = await complete(model, {
 ### Browser Compatibility Notes
 
 - Amazon Bedrock (`bedrock-converse-stream`) is not supported in browser environments.
-- OAuth login flows are not supported in browser environments. Use the `@earendil-works/pi-ai/oauth` entry point in Node.js.
+- OAuth login flows are not supported in browser environments. Use the `@earendil-works/pi-ai-providers/oauth` entry point in Node.js.
 - In browser builds, Bedrock can still appear in model lists. Calls to Bedrock models fail at runtime.
 - Use a server-side proxy or backend service if you need Bedrock or OAuth-based auth from a web app.
 
 ### Environment Variables (Node.js only)
 
-In Node.js environments, you can set environment variables to avoid passing API keys:
+`@earendil-works/pi-ai` does not read provider API keys from environment variables. Use `@earendil-works/pi-ai-providers` to resolve environment variables, then pass the key explicitly:
+
+```typescript
+import { getEnvApiKey, getModel } from '@earendil-works/pi-ai-providers';
+import { complete } from '@earendil-works/pi-ai';
+
+const model = getModel('openai', 'gpt-4o-mini');
+const response = await complete(model, context, {
+  apiKey: getEnvApiKey('openai'),
+});
+```
+
+The provider package recognizes these defaults:
 
 | Provider | Environment Variable(s) |
 |----------|------------------------|
@@ -1103,7 +1120,7 @@ In Node.js environments, you can set environment variables to avoid passing API 
 | Anthropic | `ANTHROPIC_API_KEY` or `ANTHROPIC_OAUTH_TOKEN` |
 | DeepSeek | `DEEPSEEK_API_KEY` |
 | Google | `GEMINI_API_KEY` |
-| Vertex AI | `GOOGLE_CLOUD_API_KEY` or `GOOGLE_CLOUD_PROJECT` (or `GCLOUD_PROJECT`) + `GOOGLE_CLOUD_LOCATION` + ADC |
+| Vertex AI | `GOOGLE_CLOUD_API_KEY` for API-key auth; `GOOGLE_CLOUD_PROJECT` (or `GCLOUD_PROJECT`) + `GOOGLE_CLOUD_LOCATION` for ADC |
 | Mistral | `MISTRAL_API_KEY` |
 | Groq | `GROQ_API_KEY` |
 | Cerebras | `CEREBRAS_API_KEY` |
@@ -1124,23 +1141,10 @@ In Node.js environments, you can set environment variables to avoid passing API 
 | Xiaomi MiMo Token Plan (Singapore) | `XIAOMI_TOKEN_PLAN_SGP_API_KEY` |
 | GitHub Copilot | `COPILOT_GITHUB_TOKEN` |
 
-When set, the library automatically uses these keys:
-
-```typescript
-// Uses OPENAI_API_KEY from environment
-const model = getModel('openai', 'gpt-4o-mini');
-const response = await complete(model, context);
-
-// Or override with explicit key
-const response = await complete(model, context, {
-  apiKey: 'sk-different-key'
-});
-```
-
 ### Checking Environment Variables
 
 ```typescript
-import { getEnvApiKey } from '@earendil-works/pi-ai';
+import { getEnvApiKey } from '@earendil-works/pi-ai-providers';
 
 // Check if an API key is set in environment variables
 const key = getEnvApiKey('openai');  // checks OPENAI_API_KEY
@@ -1158,13 +1162,13 @@ For paid Cloud Code Assist subscriptions, set `GOOGLE_CLOUD_PROJECT` or `GOOGLE_
 
 ### Vertex AI
 
-Vertex AI models support either a Google Cloud API key or Application Default Credentials (ADC):
+Vertex AI models support either a Google Cloud API key passed as `apiKey` or Application Default Credentials (ADC):
 
-- **API key**: Set `GOOGLE_CLOUD_API_KEY` or pass `apiKey` in the call options.
+- **API key**: Resolve `GOOGLE_CLOUD_API_KEY` with `getEnvApiKey('google-vertex')`, or pass any API key directly in the call options.
 - **Local development (ADC)**: Run `gcloud auth application-default login`
 - **CI/Production (ADC)**: Set `GOOGLE_APPLICATION_CREDENTIALS` to point to a service account JSON key file
 
-When using ADC, also set `GOOGLE_CLOUD_PROJECT` (or `GCLOUD_PROJECT`) and `GOOGLE_CLOUD_LOCATION`. You can also pass `project`/`location` in the call options. When using `GOOGLE_CLOUD_API_KEY`, `project` and `location` are not required.
+When using ADC, also set `GOOGLE_CLOUD_PROJECT` (or `GCLOUD_PROJECT`) and `GOOGLE_CLOUD_LOCATION`. You can also pass `project`/`location` in the call options. When passing an API key, `project` and `location` are not required.
 
 Example:
 
@@ -1179,14 +1183,15 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
 ```
 
 ```typescript
-import { getModel, complete } from '@earendil-works/pi-ai';
+import { getEnvApiKey, getModel } from '@earendil-works/pi-ai-providers';
+import { complete } from '@earendil-works/pi-ai';
 
 (async () => {
   const model = getModel('google-vertex', 'gemini-2.5-flash');
   const response = await complete(model, {
     messages: [{ role: 'user', content: 'Hello from Vertex AI' }]
   }, {
-    apiKey: process.env.GOOGLE_CLOUD_API_KEY,
+    apiKey: getEnvApiKey('google-vertex'),
   });
 
   for (const block of response.content) {
@@ -1202,16 +1207,16 @@ Official docs: [Application Default Credentials](https://cloud.google.com/docs/a
 The quickest way to authenticate:
 
 ```bash
-npx @earendil-works/pi-ai login              # interactive provider selection
-npx @earendil-works/pi-ai login anthropic    # login to specific provider
-npx @earendil-works/pi-ai list               # list available providers
+npx @earendil-works/pi-ai-providers login              # interactive provider selection
+npx @earendil-works/pi-ai-providers login anthropic    # login to specific provider
+npx @earendil-works/pi-ai-providers list               # list available providers
 ```
 
 Credentials are saved to `auth.json` in the current directory.
 
 ### Programmatic OAuth
 
-The library provides login and token refresh functions via the `@earendil-works/pi-ai/oauth` entry point. Credential storage is the caller's responsibility.
+The provider package provides login and token refresh functions via the `@earendil-works/pi-ai-providers/oauth` entry point. Credential storage is the caller's responsibility.
 
 ```typescript
 import {
@@ -1228,13 +1233,13 @@ import {
   // Types
   type OAuthProvider,
   type OAuthCredentials,
-} from '@earendil-works/pi-ai/oauth';
+} from '@earendil-works/pi-ai-providers/oauth';
 ```
 
 ### Login Flow Example
 
 ```typescript
-import { loginGitHubCopilot } from '@earendil-works/pi-ai/oauth';
+import { loginGitHubCopilot } from '@earendil-works/pi-ai-providers/oauth';
 import { writeFileSync } from 'fs';
 
 const credentials = await loginGitHubCopilot({
@@ -1258,8 +1263,9 @@ writeFileSync('auth.json', JSON.stringify(auth, null, 2));
 Use `getOAuthApiKey()` to get an API key, automatically refreshing if expired:
 
 ```typescript
-import { getModel, complete } from '@earendil-works/pi-ai';
-import { getOAuthApiKey } from '@earendil-works/pi-ai/oauth';
+import { getModel } from '@earendil-works/pi-ai-providers';
+import { getOAuthApiKey } from '@earendil-works/pi-ai-providers/oauth';
+import { complete } from '@earendil-works/pi-ai';
 import { readFileSync, writeFileSync } from 'fs';
 
 // Load your stored credentials
@@ -1317,14 +1323,14 @@ Create a new provider file (for example `amazon-bedrock.ts`) that exports:
 - Add a package subpath export in `package.json` for the provider module (`./dist/providers/<provider>.js`)
 - Add lazy loader wrappers in `src/providers/register-builtins.ts`, do not statically import provider implementation modules there
 - Add any root-level `export type` re-exports in `src/index.ts` that should remain available from `@earendil-works/pi-ai`
-- Add credential detection in `env-api-keys.ts` for the new provider
-- Ensure `streamSimple` handles auth lookup via `getEnvApiKey()` or provider-specific auth
+- Keep `streamSimple` auth-agnostic; callers pass resolved credentials through options.
 
-#### 4. Model Generation (`scripts/generate-models.ts`, `scripts/generate-image-models.ts`)
+#### 4. Provider Catalog (`../ai-providers/`)
 
-- Add logic to fetch and parse models from the provider's source (e.g., models.dev API)
-- Map chat/tool-capable provider model data to the standardized `Model` interface via `scripts/generate-models.ts`
-- Map image-generation provider model data to the standardized `ImagesModel` interface via `scripts/generate-image-models.ts`
+- Add credential detection in `src/env-api-keys.ts` for the new provider.
+- Add logic to fetch and parse models from the provider's source (for example, models.dev API).
+- Map chat/tool-capable provider model data to the standardized `Model` interface via `scripts/generate-models.ts`.
+- Map image-generation provider model data to the standardized `ImagesModel` interface via `scripts/generate-image-models.ts`.
 - Handle provider-specific quirks (pricing format, capability flags, model ID transformations)
 
 #### 5. Tests (`test/`)

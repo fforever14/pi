@@ -2,8 +2,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Type } from "typebox";
 import { describe, expect, it } from "vitest";
+import { getModel } from "../../ai-providers/src/models.ts";
 import type { Api, Context, Model, Tool, ToolResultMessage } from "../src/index.ts";
-import { complete, getModel } from "../src/index.ts";
+import { complete } from "../src/index.ts";
 import type { StreamOptions } from "../src/types.ts";
 
 type StreamOptionsWithExtras = StreamOptions & Record<string, unknown>;

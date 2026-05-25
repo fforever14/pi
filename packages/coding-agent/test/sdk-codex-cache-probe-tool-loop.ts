@@ -16,11 +16,11 @@ import {
 	type AssistantMessage,
 	type AssistantMessageEventStream,
 	type Context,
-	getModel,
 	type Model,
 	type SimpleStreamOptions,
 	Type,
 } from "@earendil-works/pi-ai";
+import { getModel } from "@earendil-works/pi-ai-providers";
 import {
 	getOpenAICodexWebSocketDebugStats,
 	streamSimpleOpenAICodexResponses,

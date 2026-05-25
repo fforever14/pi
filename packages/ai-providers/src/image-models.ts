@@ -1,5 +1,5 @@
+import type { ImagesApi, ImagesModel, KnownImagesProvider } from "@earendil-works/pi-ai";
 import { IMAGE_MODELS } from "./image-models.generated.ts";
-import type { ImagesApi, ImagesModel, KnownImagesProvider } from "./types.ts";
 
 const imageModelRegistry: Map<string, Map<string, ImagesModel<ImagesApi>>> = new Map();
 

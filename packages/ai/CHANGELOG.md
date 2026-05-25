@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Breaking Changes
+
+- Moved built-in provider model metadata, generated model catalogs, environment API-key helpers, and OAuth helpers to `@earendil-works/pi-ai-providers`. `@earendil-works/pi-ai` now keeps the runtime API compatibility layer and requires callers to pass resolved credentials explicitly.
+
 ## [0.75.5] - 2026-05-23
 
 ### Breaking Changes

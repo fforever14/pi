@@ -7,6 +7,8 @@
 			"@earendil-works/pi-coding-agent/hooks": ["./src/core/hooks/index.ts"],
 			"@earendil-works/pi-tui": ["../tui/src/index.ts"],
 			"@earendil-works/pi-ai": ["../ai/src/index.ts"],
+			"@earendil-works/pi-ai-providers": ["../ai-providers/src/index.ts"],
+			"@earendil-works/pi-ai-providers/oauth": ["../ai-providers/src/oauth.ts"],
 			"typebox": ["../../node_modules/typebox"]
 		},
 		"skipLibCheck": true

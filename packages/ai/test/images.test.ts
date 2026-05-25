@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { getImageModel } from "../src/image-models.ts";
+import { getImageModel } from "../../ai-providers/src/image-models.ts";
 import { generateImages } from "../src/images.ts";
 import type { ImageContent, ImagesContext, ImagesModel, ProviderImagesOptions } from "../src/types.ts";
 

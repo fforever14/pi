@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Moved inherited provider catalogs, environment API-key helpers, and OAuth helpers to `@earendil-works/pi-ai-providers`.
+
 ### Fixed
 
 - Fixed `RpcClient` to reject pending requests and consume stdin pipe errors when the child process exits unexpectedly ([#4764](https://github.com/earendil-works/pi/issues/4764)).

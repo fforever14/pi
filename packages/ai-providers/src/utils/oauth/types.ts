@@ -1,4 +1,4 @@
-import type { Api, Model } from "../../types.ts";
+import type { Api, Model } from "@earendil-works/pi-ai";
 
 export type OAuthCredentials = {
 	refresh: string;

@@ -10,10 +10,10 @@ import {
 	type AssistantMessage,
 	type AssistantMessageEvent,
 	EventStream,
-	getModel,
 	type ImageContent,
 	type TextContent,
 } from "@earendil-works/pi-ai";
+import { getModel } from "@earendil-works/pi-ai-providers";
 import { Type } from "typebox";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AgentSession } from "../src/core/agent-session.ts";

@@ -1,0 +1,71 @@
+{
+	"name": "@earendil-works/pi-ai-providers",
+	"version": "0.75.5",
+	"description": "Provider presets, model metadata, environment API keys, and OAuth helpers for pi-ai",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./oauth": {
+			"types": "./dist/oauth.d.ts",
+			"import": "./dist/oauth.js"
+		},
+		"./oauth/*": {
+			"types": "./dist/utils/oauth/*.d.ts",
+			"import": "./dist/utils/oauth/*.js"
+		},
+		"./models.generated": {
+			"types": "./dist/models.generated.d.ts",
+			"import": "./dist/models.generated.js"
+		},
+		"./image-models.generated": {
+			"types": "./dist/image-models.generated.d.ts",
+			"import": "./dist/image-models.generated.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"bin": {
+		"pi-ai-providers": "./dist/cli.js"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"scripts": {
+		"clean": "shx rm -rf dist",
+		"generate-models": "node scripts/generate-models.ts",
+		"generate-image-models": "node scripts/generate-image-models.ts",
+		"build": "npm run generate-models && npm run generate-image-models && tsgo -p tsconfig.build.json",
+		"prepublishOnly": "npm run clean && npm run build"
+	},
+	"dependencies": {
+		"@earendil-works/pi-ai": "^0.75.5"
+	},
+	"keywords": [
+		"ai",
+		"llm",
+		"providers",
+		"models",
+		"oauth"
+	],
+	"author": "Mario Zechner",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/earendil-works/pi-mono.git",
+		"directory": "packages/ai-providers"
+	},
+	"engines": {
+		"node": ">=22.19.0"
+	},
+	"devDependencies": {
+		"@types/node": "24.12.4",
+		"shx": "0.4.0",
+		"typescript": "5.9.3",
+		"vitest": "3.2.4"
+	}
+}

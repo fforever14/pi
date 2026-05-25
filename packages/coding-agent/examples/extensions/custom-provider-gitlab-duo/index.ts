@@ -15,12 +15,11 @@ import {
 	type Context,
 	createAssistantMessageEventStream,
 	type Model,
-	type OAuthCredentials,
-	type OAuthLoginCallbacks,
 	type SimpleStreamOptions,
 	streamSimpleAnthropic,
 	streamSimpleOpenAIResponses,
 } from "@earendil-works/pi-ai";
+import type { OAuthCredentials, OAuthLoginCallbacks } from "@earendil-works/pi-ai-providers";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 // =============================================================================

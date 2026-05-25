@@ -45,7 +45,7 @@ vi.mock("@google/genai", () => {
 	};
 });
 
-import { getModel } from "../src/models.ts";
+import { getModel } from "../../ai-providers/src/models.ts";
 import { streamGoogleVertex } from "../src/providers/google-vertex.ts";
 import type { Context, Model } from "../src/types.ts";
 
@@ -108,8 +108,8 @@ describe("google-vertex api key resolution", () => {
 		expect(googleGenAiMock.constructorCalls[0]).not.toHaveProperty("apiKey");
 	});
 
-	it("falls back to ADC when GOOGLE_CLOUD_API_KEY is a placeholder marker", async () => {
-		process.env.GOOGLE_CLOUD_API_KEY = "<authenticated>";
+	it("does not read GOOGLE_CLOUD_API_KEY from the core runtime", async () => {
+		process.env.GOOGLE_CLOUD_API_KEY = "AIzaSyExampleRealisticLookingEnvApiKey123456";
 
 		const stream = streamGoogleVertex(model, context, {
 			project: "test-project",

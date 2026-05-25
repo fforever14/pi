@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getModel } from "../src/models.ts";
+import { getModel } from "../../ai-providers/src/models.ts";
 import { streamAnthropic } from "../src/providers/anthropic.ts";
 import { streamOpenAICompletions } from "../src/providers/openai-completions.ts";
 import { streamOpenAIResponses } from "../src/providers/openai-responses.ts";

@@ -7,18 +7,16 @@ import {
 	type Api,
 	type AssistantMessageEventStream,
 	type Context,
-	getModels,
-	getProviders,
 	type KnownProvider,
 	type Model,
-	type OAuthProviderInterface,
 	type OpenAICompletionsCompat,
 	type OpenAIResponsesCompat,
 	registerApiProvider,
 	resetApiProviders,
 	type SimpleStreamOptions,
 } from "@earendil-works/pi-ai";
-import { registerOAuthProvider, resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
+import { getModels, getProviders, type OAuthProviderInterface } from "@earendil-works/pi-ai-providers";
+import { registerOAuthProvider, resetOAuthProviders } from "@earendil-works/pi-ai-providers/oauth";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { type Static, Type } from "typebox";

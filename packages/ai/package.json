@@ -1,7 +1,7 @@
 {
 	"name": "@earendil-works/pi-ai",
 	"version": "0.75.5",
-	"description": "Unified LLM API with automatic model discovery and provider configuration",
+	"description": "Unified LLM runtime for chat, responses, messages, completions, and image APIs",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -42,17 +42,10 @@
 			"types": "./dist/providers/openai-responses.d.ts",
 			"import": "./dist/providers/openai-responses.js"
 		},
-		"./oauth": {
-			"types": "./dist/oauth.d.ts",
-			"import": "./dist/oauth.js"
-		},
 		"./bedrock-provider": {
 			"types": "./dist/bedrock-provider.d.ts",
 			"import": "./dist/bedrock-provider.js"
 		}
-	},
-	"bin": {
-		"pi-ai": "./dist/cli.js"
 	},
 	"files": [
 		"dist",
@@ -60,9 +53,7 @@
 	],
 	"scripts": {
 		"clean": "shx rm -rf dist",
-		"generate-models": "node scripts/generate-models.ts",
-		"generate-image-models": "node scripts/generate-image-models.ts",
-		"build": "npm run generate-models && npm run generate-image-models && tsgo -p tsconfig.build.json",
+		"build": "tsgo -p tsconfig.build.json",
 		"test": "vitest --run",
 		"prepublishOnly": "npm run clean && npm run build"
 	},

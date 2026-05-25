@@ -25,8 +25,9 @@
 import { writeFileSync } from "fs";
 import { Type } from "typebox";
 import { beforeAll, describe, expect, it } from "vitest";
-import { getModel } from "../src/models.ts";
-import { completeSimple, getEnvApiKey } from "../src/stream.ts";
+import { getEnvApiKey } from "../../ai-providers/src/env-api-keys.ts";
+import { getModel } from "../../ai-providers/src/models.ts";
+import { completeSimple } from "../src/stream.ts";
 import type { Api, AssistantMessage, Message, Model, Tool, ToolResultMessage } from "../src/types.ts";
 import { hasAzureOpenAICredentials } from "./azure-utils.ts";
 import { hasCloudflareAiGatewayCredentials, hasCloudflareWorkersAICredentials } from "./cloudflare-utils.ts";

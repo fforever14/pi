@@ -12,7 +12,7 @@ npm install @earendil-works/pi-agent-core
 
 ```typescript
 import { Agent } from "@earendil-works/pi-agent-core";
-import { getModel } from "@earendil-works/pi-ai";
+import { getModel } from "@earendil-works/pi-ai-providers";
 
 const agent = new Agent({
   initialState: {

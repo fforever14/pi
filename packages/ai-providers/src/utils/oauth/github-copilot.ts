@@ -2,8 +2,8 @@
  * GitHub Copilot OAuth flow
  */
 
+import type { Api, Model } from "@earendil-works/pi-ai";
 import { getModels } from "../../models.ts";
-import type { Api, Model } from "../../types.ts";
 import { pollOAuthDeviceCodeFlow } from "./device-code.ts";
 import type { OAuthCredentials, OAuthDeviceCodeInfo, OAuthLoginCallbacks, OAuthProviderInterface } from "./types.ts";
 
